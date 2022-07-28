@@ -7,4 +7,6 @@ def validate_email(email: str) -> str:
         valid_email = email_validator.validate_email(email=email)
         return valid_email.email
     except email_validator.EmailNotValidError:
-        raise fastapi.HTTPException(status_code=400, detail="Please enter a valid email")
+        raise fastapi.HTTPException(
+            status_code=400, detail="Please enter a valid email"
+        )

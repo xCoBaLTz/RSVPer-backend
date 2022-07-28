@@ -1,11 +1,11 @@
-CREATE TABLE token (
+CREATE TABLE users (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) NOT NULL UNIQUE
 );
 
-CREATE TABLE users (
+CREATE TABLE invites (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    token_id uuid REFERENCES token (id),
+    user_id uuid REFERENCES users (id),
     first_name VARCHAR(99),
     last_name VARCHAR(99),
     rsvp_status BOOLEAN DEFAULT FALSE,

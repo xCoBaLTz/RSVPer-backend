@@ -1,11 +1,10 @@
 from datetime import datetime
-from uuid import UUID
 from pydantic import BaseModel
 
 
 class Invite(BaseModel):
-    id: UUID
-    user_id: UUID
+    id: str
+    user_id: str
     first_name: str
     last_name: str
     rsvp_status: bool

@@ -3,7 +3,7 @@ import uuid
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import UUID
 
-import app.database as database
+from app import database as database
 
 
 class User(database.Base):
