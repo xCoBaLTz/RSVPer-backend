@@ -1,12 +1,48 @@
-import fastapi
+from typing import List
+from uuid import UUID
+import validator
 from sqlalchemy.orm import Session
-from fastapi import FastAPI, Form, HTTPException
+from fastapi import FastAPI, HTTPException, security, Depends
+
+from app.schemas import User, Invite
 from app.services import services
 
 app = FastAPI()
 
 
 @app.post("/token")
-async def login(email: str = Form(), db: Session = fastapi.Depends(services.get_db)):
-    token = await services.get_token(email, db)
-    return token if token else HTTPException(status_code=404, detail="User not found.")
+async def generate_token(
+        form_data: security.OAuth2PasswordRequestForm = Depends(),
+        db: Session = Depends(services.get_db())
+):
+    user = await services.authenticate_user(email=form_data.username, db=db)
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid Credentials")
+
+    return await services.create_token(user=user)
+
+
+@app.get("/users/me", response_model=User)
+async def get_user(user: User = Depends(services.get_current_user())):
+    return user
+
+
+# @app.get("/users/{email}", response_model=User)
+# async def get_user_by_email(email: str, db: Session = Depends(services.get_db)):
+#     user = await services.get_user_by_email(validator.validate_email(email), db)
+#
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")
+#
+#     return user
+
+
+@app.get("/invites", response_model=List[Invite])
+async def get_invites(user_id: UUID, db: Session = Depends(services.get_db())):
+    invites = await services.get_invites(user_id, db)
+
+    if not invites:
+        raise HTTPException(status_code=404, detail="Invites not found")
+
+    return invites
