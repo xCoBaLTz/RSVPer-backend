@@ -1,14 +1,16 @@
 import os
 import jwt
-from typing import List, Union
+from typing import List
 from uuid import UUID
 from sqlalchemy.orm import Session
-from fastapi import Depends, HTTPException, Header
+from fastapi import Depends, HTTPException, security
 
 from app import schemas, validator, database, models
 
 JWT_SECRET = os.getenv("JWT_SECRET")
 ALGORITHM = "HS256"
+
+oauth2schema = security.OAuth2PasswordBearer("/token")
 
 
 def get_db():
@@ -32,12 +34,11 @@ async def create_token(user: models.User):
     user_dict = user_schema_obj.dict()
     token = jwt.encode(user_dict, JWT_SECRET)
 
-    return dict(access_token=token, token_type="Bearer")
+    return dict(access_token=token, token_type="bearer")
 
 
 async def get_current_user(
-    db: Session = Depends(get_db),
-    token: Union[str, None] = Header(default=None, alias="Bearer"),
+    db: Session = Depends(get_db), token: str = Depends(oauth2schema)
 ):
     payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
     user = db.query(models.User).get(payload["id"])
