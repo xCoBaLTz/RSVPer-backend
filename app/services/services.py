@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, security
 
-from app import schemas, validator, database, models
+from app import models, validator, database, schemas
 
 JWT_SECRET = os.getenv("JWT_SECRET")
 ALGORITHM = "HS256"
@@ -21,16 +21,16 @@ def get_db():
         db.close()
 
 
-async def get_user_by_email(email: str, db: Session) -> schemas.User:
-    return db.query(models.User).filter(models.User.email == email).first()
+async def get_user_by_email(email: str, db: Session) -> models.User:
+    return db.query(schemas.User).filter(schemas.User.email == email).first()
 
 
-async def get_invites(user_id: UUID, db: Session) -> List[schemas.Invite]:
-    return db.query(models.Invite).filter(models.Invite.user_id == user_id).all()
+async def get_invites(user_id: UUID, db: Session) -> List[models.Invite]:
+    return db.query(schemas.Invite).filter(schemas.Invite.user_id == user_id).all()
 
 
-async def create_token(user: models.User):
-    user_schema_obj = schemas.User(id=str(user.id), email=user.email)
+async def create_token(user: schemas.User):
+    user_schema_obj = models.User(id=str(user.id), email=user.email)
     user_dict = user_schema_obj.dict()
     token = jwt.encode(user_dict, JWT_SECRET)
 
@@ -41,10 +41,10 @@ async def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(oauth2schema)
 ):
     payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
-    user = db.query(models.User).get(payload["id"])
+    user = db.query(schemas.User).get(payload["id"])
     if not user:
         raise HTTPException(status_code=401, detail="Invalid Credentials")
-    return schemas.User(id=str(user.id), email=user.email)
+    return models.User(id=str(user.id), email=user.email)
 
 
 async def authenticate_user(email: str, db: Session):

@@ -1,12 +1,6 @@
-import uuid
-
-import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID
-
-from app import database as database
+from pydantic import BaseModel
 
 
-class User(database.Base):
-    __tablename__ = "users"
-    id = sa.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    email = sa.Column(sa.String, index=True, unique=True)
+class User(BaseModel):
+    id: str
+    email: str
