@@ -14,7 +14,7 @@ oauth2schema = security.OAuth2PasswordBearer("/token")
 
 
 def get_db():
-    db = database.SessionLocal()
+    db = database.session()
     try:
         yield db
     finally:

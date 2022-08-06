@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from app import database as database
 
 
-class Invite(database.Base):
+class Invite(database.base):
     __tablename__ = "invites"
     id = sa.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = sa.Column(UUID(as_uuid=True), sa.ForeignKey("user.id"))
