@@ -74,7 +74,9 @@ async def get_current_user(
 
 
 async def authenticate_user(email: str, db: Session) -> Union[schemas.User, bool]:
-    user: schemas.User = await get_user_by_email(email=validator.validate_email(email), db=db)
+    user: schemas.User = await get_user_by_email(
+        email=validator.validate_email(email), db=db
+    )
     if not user:
         return False
     return user
@@ -84,7 +86,9 @@ async def update_invite(
     invite_id: UUID, request: models.Invite, user_id: UUID, db: Session
 ) -> models.Invite:
 
-    invite: schemas.Invite = await get_invite_by_id(invite_id=invite_id, user_id=user_id, db=db)
+    invite: schemas.Invite = await get_invite_by_id(
+        invite_id=invite_id, user_id=user_id, db=db
+    )
 
     if not invite:
         raise HTTPException(

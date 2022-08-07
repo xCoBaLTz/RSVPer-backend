@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from fastapi import FastAPI, HTTPException, Depends, Body
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from typing import List
@@ -30,7 +30,9 @@ class TokenRequest(BaseModel):
 
 
 @app.post("/token", response_model=Auth)
-async def generate_token(request: TokenRequest, db: Session = Depends(services.get_db)) -> Auth:
+async def generate_token(
+    request: TokenRequest, db: Session = Depends(services.get_db)
+) -> Auth:
     user = await services.authenticate_user(email=request.email, db=db)
 
     if not user:
