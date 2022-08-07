@@ -13,5 +13,6 @@ class Invite(database.base):
     user_id = sa.Column(UUID(as_uuid=True), sa.ForeignKey("user.id"))
     first_name = sa.Column(sa.String)
     last_name = sa.Column(sa.String)
+    rsvp_status = sa.Column(sa.Boolean, default=False)
     created_at = sa.Column(sa.DateTime, default=datetime.now)
     updated_at = sa.Column(sa.DateTime, default=datetime.now)
