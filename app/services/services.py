@@ -39,16 +39,21 @@ async def get_user_by_email(email: str, db: Session) -> schemas.User:
 
 
 async def get_invites(user_id: UUID, db: Session) -> List[models.Invite]:
-    invites = db.query(schemas.Invite).filter(schemas.Invite.user_id == user_id).all()
+    invites = (
+        db.query(schemas.Invite)
+        .filter(schemas.Invite.user_id == user_id)
+        .order_by(schemas.Invite.first_name)
+        .all()
+    )
     return list(map(map_invite_schema_to_model, invites))
 
 
 def map_invite_schema_to_model(invite: schemas.Invite) -> models.Invite:
     return models.Invite(
         id=str(invite.id),
-        first_name=invite.first_name,
-        last_name=invite.last_name,
-        rsvp_status=invite.rsvp_status,
+        firstName=invite.first_name,
+        lastName=invite.last_name,
+        rsvpStatus=invite.rsvp_status,
     )
 
 
@@ -57,7 +62,7 @@ async def create_token(user: schemas.User) -> models.Auth:
     user_dict = user_schema_obj.dict()
     token = jwt.encode(user_dict, JWT_SECRET)
 
-    return models.Auth(access_token=token, token_type="bearer")
+    return models.Auth(accessToken=token, tokenType="bearer")
 
 
 async def get_current_user(
@@ -97,15 +102,15 @@ async def update_invite(
         )
 
     db.execute(
-        text("UPDATE invites SET rsvp_status=:y WHERE id=:x"),
-        {"x": invite_id, "y": request.rsvp_status},
+        text("UPDATE invites SET rsvp_status=:x WHERE id=:y"),
+        {"x": request.rsvpStatus, "y": invite_id},
     )
     db.commit()
     db.refresh(invite)
 
     return models.Invite(
         id=str(invite.id),
-        first_name=invite.first_name,
-        last_name=invite.last_name,
-        rsvp_status=invite.rsvp_status,
+        firstName=invite.first_name,
+        lastName=invite.last_name,
+        rsvpStatus=invite.rsvp_status,
     )

@@ -72,6 +72,7 @@ async def update_invite(
             status_code=400,
             detail="Please make sure the request id matches the path parameter id",
         )
+
     invite = await services.update_invite(UUID(invite_id), request, UUID(user.id), db)
 
     if not invite:
@@ -81,10 +82,3 @@ async def update_invite(
         )
 
     return invite
-
-
-# for local running, make sure environment variables are set
-# import uvicorn
-#
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
