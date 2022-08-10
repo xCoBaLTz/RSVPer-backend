@@ -12,7 +12,7 @@ from app import models, validator, database, schemas
 JWT_SECRET = os.getenv("JWT_SECRET")
 ALGORITHM = "HS256"
 
-oauth2schema = security.OAuth2PasswordBearer("/token")
+oauth2schema = security.OAuth2PasswordBearer("/login")
 
 
 def get_db():
@@ -80,7 +80,7 @@ async def get_current_user(
 
 async def authenticate_user(email: str, db: Session) -> Union[schemas.User, bool]:
     user: schemas.User = await get_user_by_email(
-        email=validator.validate_email(email), db=db
+        email=validator.validate_email(email.lower()), db=db
     )
     if not user:
         return False

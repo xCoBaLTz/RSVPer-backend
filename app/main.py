@@ -12,9 +12,7 @@ from app.services import services
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",
-]
+origins = ["https://seananandsonia.com"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,7 +27,12 @@ class TokenRequest(BaseModel):
     email: str
 
 
-@app.post("/token", response_model=Auth)
+@app.get("/health")
+def health():
+    return "200"
+
+
+@app.post("/login", response_model=Auth)
 async def generate_token(
     request: TokenRequest, db: Session = Depends(services.get_db)
 ) -> Auth:
