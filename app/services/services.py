@@ -1,4 +1,6 @@
 import os
+from datetime import datetime
+
 import jwt
 from typing import List, Union
 from uuid import UUID
@@ -102,8 +104,8 @@ async def update_invite(
         )
 
     db.execute(
-        text("UPDATE invites SET rsvp_status=:x WHERE id=:y"),
-        {"x": request.rsvpStatus, "y": invite_id},
+        text("UPDATE invites SET rsvp_status=:x, updated_at=:y WHERE id=:z"),
+        {"x": request.rsvpStatus, "y": datetime.now(), "z": invite_id},
     )
     db.commit()
     db.refresh(invite)
